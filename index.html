@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <!-- 
+    Import metakeep sdk.
+    You can also import npm package if you are using node for building website
+    e.g. 
+    npm install metakeep@2.1.0
+    require(metakeep)
+    -->
+    <!-- <script src="./send2.js"></script> -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/metakeep@2.1.0/lib/index.js"
+      integrity="sha256-yu6Y1lRaWke2hDflTZzL+X3O9Cx86sVI4NvirkWoxdU="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/web3@latest/dist/web3.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      /* Init SDK */
+      const sdk = new MetaKeep({
+        /* App id to configure UI */
+        appId: "286e3fc0-b3fc-4aa6-b094-baa2439fd011",
+      });
+
+      /* Call getWallet. It returns a promise which returns when the operation succeeds.
+        Otherwise throws an error.
+        */
+      let userEthAddress;
+      async function getWallet() {
+        const web3 = await new Web3(
+          new Web3.providers.HttpProvider(
+            "https://polygon-mumbai.g.alchemy.com/v2/IG7pWzRCXsdYf740rjB-g-z_m1_v5rHY"
+          )
+        );
+
+        try {
+          const getWalletResponse = await sdk.getWallet();
+          console.log("getWallet successful");
+          console.log(getWalletResponse);
+          userEthAddress = getWalletResponse.wallet.ethAddress;
+          
+          const txCount = await web3.eth.getTransactionCount(userEthAddress);
+          console.log("nonce", txCount);
+
+          const txObject = {
+            nonce: web3.utils.toHex(txCount),
+            to: "0xa779b39Df00aE3555842Edc7f038635F1a406efE",
+            from: userEthAddress,
+            chainId: 80001,
+            value: web3.utils.toHex(web3.utils.toWei("1", "wei")),
+            data: web3.utils.toHex(0),
+            gas: web3.utils.toHex(web3.utils.toWei("210000", "wei")),
+            maxFeePerGas: web3.utils.toHex(
+              web3.utils.toWei("2500000000000", "wei")
+            ),
+            maxPriorityFeePerGas: web3.utils.toHex(
+              web3.utils.toWei("2500000000000", "wei")
+            ),
+          };
+
+          let data = await sdk.signTransaction(
+            // Eth transaction object
+            txObject,
+            // signing reason
+            "reason"
+          );
+          console.log(data);
+          const data2 = await web3.eth.sendSignedTransaction(
+            data.signedRawTransaction
+          );
+          console.log("final transaction data", data2);
+          return false;
+        } catch (err) {
+          console.log("Error when trying to get wallet");
+          console.log(err.message);
+        }
+      }
+
+      getWallet();
+    </script>
+  </body>
+</html>
