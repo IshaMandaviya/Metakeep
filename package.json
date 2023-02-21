@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "ethereumjs-tx": "^2.1.2",
+    "ethers": "^6.0.4",
+    "metakeep": "^2.1.0",
+    "web3": "^1.8.2"
+  }
+}
