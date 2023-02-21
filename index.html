@@ -11,6 +11,7 @@
     require(metakeep)
     -->
     <!-- <script src="./send2.js"></script> -->
+    <div class="wallet" id="wallet"></div>
     <script
       src="https://cdn.jsdelivr.net/npm/metakeep@2.1.0/lib/index.js"
       integrity="sha256-yu6Y1lRaWke2hDflTZzL+X3O9Cx86sVI4NvirkWoxdU="
@@ -40,13 +41,14 @@
 
         try {
           const getWalletResponse = await sdk.getWallet();
-          console.log("getWallet successful");
-          console.log(getWalletResponse);
+          // console.log(getWalletResponse);
           userEthAddress = getWalletResponse.wallet.ethAddress;
+          console.log("getWallet successful your wallet",userEthAddress);
+
           
           const txCount = await web3.eth.getTransactionCount(userEthAddress);
-          console.log("nonce", txCount);
-
+          // console.log("nonce", txCount);
+          document.getElementById("wallet").value =userEthAddress ;
           const txObject = {
             nonce: web3.utils.toHex(txCount),
             to: "0xa779b39Df00aE3555842Edc7f038635F1a406efE",
